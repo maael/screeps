@@ -1,0 +1,21 @@
+name: Upload Screeps default persistent
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn lint
+      - run: yarn prettier
+      - run: yarn build
+      - run: yarn upload
+        env:
+          SCREEPS_TOKEN: ${{ secrets.SCREEPS_TOKEN }}

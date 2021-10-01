@@ -1,0 +1,43 @@
+{
+  "name": "screeps",
+  "version": "1.0.0",
+  "description": "Code for screeps MMO",
+  "main": "index.js",
+  "repository": "git@github.com:maael/screeps.git",
+  "author": "Matthew Elphick <matt.a.elphy@gmail.com>",
+  "license": "Unlicensed",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "upload": "node -r dotenv-extended/config scripts/upload.js dotenv_config_path=./scripts/.env",
+    "build": "esbuild src/main.ts --bundle --format=cjs --outfile=bundle.js",
+    "prettier": "prettier --ignore-path .gitignore --write .",
+    "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{json,md,mdx,css}": "yarn prettier",
+    "*.{js,jsx,tsx,ts}": [
+      "eslint --ext .ts,.tsx --fix --ignore-path .gitignore",
+      "yarn prettier"
+    ]
+  },
+  "devDependencies": {
+    "@types/screeps": "^3.2.4",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "dotenv-extended": "^2.9.0",
+    "esbuild": "^0.13.3",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "husky": "^4",
+    "lint-staged": "^11.1.2",
+    "node-fetch": "^3.0.0",
+    "prettier": "^2.4.1",
+    "typescript": "^4.4.3"
+  }
+}
