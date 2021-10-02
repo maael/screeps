@@ -1,7 +1,10 @@
 export default {
   run: function (creep: Creep) {
     if (creep.memory.activeRole !== 'builder') return
-    if (Object.keys(Game.constructionSites).length < 1) throw new Error('Nothing to build')
+    if (Object.keys(Game.constructionSites).length < 1) {
+      creep.say('Nothing to build')
+      throw new Error('Nothing to build')
+    }
     if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
       creep.memory.building = false
       creep.say('🔄 harvest')

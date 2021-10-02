@@ -94,16 +94,28 @@ export function loop() {
       Object.keys(Game.constructionSites).length < 1
     ) {
       const mySpawn = creep.room.find(FIND_MY_SPAWNS)[0]
-      const extensionSpawns = creep.room.lookForAtArea(
-        LOOK_TERRAIN,
+      const extensionSpawns = creep.room.lookAtArea(
         mySpawn.pos.x - 2,
         mySpawn.pos.y - 2,
         mySpawn.pos.x + 2,
-        mySpawn.pos.y + 2,
-        true
-      )[0]
-      if (extensionSpawns) {
-        creep.room.createConstructionSite(extensionSpawns.x, extensionSpawns.y, STRUCTURE_EXTENSION)
+        mySpawn.pos.y + 2
+      )
+      let freeSpace
+      for (const x in extensionSpawns) {
+        for (const y in extensionSpawns[x]) {
+          const entries = extensionSpawns[x][y]
+          const isBuildable = entries.every(
+            ({ type, terrain }) => (type === 'terrain' && terrain === 'plain') || type === 'creep'
+          )
+          if (isBuildable) {
+            freeSpace = { x: Number(x), y: Number(y) }
+            break
+          }
+        }
+        if (freeSpace) break
+      }
+      if (freeSpace) {
+        creep.room.createConstructionSite(freeSpace.x, freeSpace.y, STRUCTURE_EXTENSION)
       }
     }
 
@@ -123,7 +135,16 @@ export function loop() {
     try {
       const fn = workerMap[creep.memory.activeRole] || workerMap.harvester
       fn.run(creep)
-    } catch {
+    } catch (e) {
+      console.log(
+        creep.name,
+        'failed activity',
+        e.message,
+        'as',
+        creep.memory.activeRole,
+        'falling back to',
+        creep.memory.role
+      )
       try {
         const fn = workerMap[creep.memory.role] || workerMap.harvester
         fn.run(creep)
