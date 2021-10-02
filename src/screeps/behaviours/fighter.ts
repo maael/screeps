@@ -1,6 +1,8 @@
-export default {
-  run: function (creep: Creep) {
-    if (creep.memory.activeRole !== 'attacker') return
+import { Behaviour } from '../../types'
+
+const FighterBehaviour: Behaviour = {
+  requiredPart: [ATTACK, RANGED_ATTACK],
+  run: function (creep) {
     const hostile = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS)
     if (hostile) {
       if (creep.attack(hostile) === ERR_NOT_IN_RANGE) {
@@ -12,8 +14,8 @@ export default {
       }
     } else {
       creep.say('No hostiles')
-      throw new Error('No hostile')
     }
   },
-  parts: [RANGED_ATTACK, WORK, TOUGH, MOVE],
 }
+
+export default FighterBehaviour

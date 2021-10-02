@@ -1,36 +1,42 @@
 interface BaseCreepMemory {
-  role: 'harvester' | 'upgrader' | 'builder'
-  activeRole?: 'attacker' | 'defender' | 'harvester' | 'upgrader' | 'builder'
+  type: 'fighter' | 'healer' | 'worker'
 }
 
-interface BuilderCreepMemory extends BaseCreepMemory {
-  role: 'builder'
-  activeRole: 'builder'
-  building: boolean
+interface FighterCreepMemory extends BaseCreepMemory {
+  type: 'fighter'
 }
 
-interface HarvesterCreepMemory extends BaseCreepMemory {
-  role: 'harvester'
-  activeRole: 'harvester'
+interface HealerCreepMemory extends BaseCreepMemory {
+  type: 'healer'
 }
 
-interface DefenderCreepMemory extends BaseCreepMemory {
-  activeRole: 'defender'
+interface WorkerCreepMemory extends BaseCreepMemory {
+  type: 'worker'
+  building?: boolean
+  upgrading?: boolean
 }
 
-interface AttackerCreepMemory extends BaseCreepMemory {
-  activeRole: 'attacker'
+declare type CreepMemory = HealerCreepMemory | WorkerCreepMemory | FighterCreepMemory
+
+declare type RoomMemory = {
+  workerAllocations?: {
+    harvesters: string[]
+    builders: string[]
+    upgraders: string[]
+  }
 }
 
-interface UpgraderCreepMemory extends BaseCreepMemory {
-  role: 'upgrader'
-  activeRole: 'upgrader'
-  upgrading: boolean
+interface Memory {
+  creeps: { [name: string]: CreepMemory }
+  powerCreeps: { [name: string]: PowerCreepMemory }
+  flags: { [name: string]: FlagMemory }
+  rooms: { [name: string]: RoomMemory }
+  spawns: { [name: string]: SpawnMemory }
+  workerAllocations: {
+    harvesters: string[]
+    builders: string[]
+    upgraders: string[]
+  }
 }
 
-declare type CreepMemory =
-  | HarvesterCreepMemory
-  | UpgraderCreepMemory
-  | DefenderCreepMemory
-  | AttackerCreepMemory
-  | BuilderCreepMemory
+declare const Memory: Memory
