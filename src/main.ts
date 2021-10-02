@@ -53,7 +53,10 @@ export function loop() {
   const upgraders = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'upgrader')
   const builders = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'builder')
   const fighters = Object.values(Game.creeps).filter(
-    (creep) => creep.memory.activeRole == 'attacker' || creep.memory.activeRole == 'defender'
+    (creep) =>
+      creep.memory.activeRole == 'attacker' ||
+      creep.memory.activeRole == 'defender' ||
+      creep.getActiveBodyparts(RANGED_ATTACK)
   )
 
   if (Game.spawns['Spawn1'].spawning) {
@@ -93,7 +96,7 @@ export function loop() {
 
     if (
       creep.room.controller?.my &&
-      creep.room.controller?.level > 2 &&
+      creep.room.controller?.level > 1 &&
       Object.keys(Game.constructionSites).length < 1
     ) {
       const mySpawn = creep.room.find(FIND_MY_SPAWNS)[0]
@@ -110,7 +113,7 @@ export function loop() {
       }
     }
 
-    const canAttack = creep.getActiveBodyparts(ATTACK)
+    const canAttack = creep.getActiveBodyparts(RANGED_ATTACK)
     const roomState = getRoomState(creep.room)
     if (roomState === RoomState.Defending && canAttack) {
       creep.memory.activeRole = 'defender'

@@ -14,5 +14,5 @@ export default {
       throw new Error('No hostile')
     }
   },
-  parts: [ATTACK, WORK, TOUGH, MOVE],
+  parts: [RANGED_ATTACK, WORK, TOUGH, MOVE],
 }
