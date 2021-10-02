@@ -2,11 +2,13 @@ import harvester from './workers/harvester'
 import upgrader from './workers/upgrader'
 import attacker from './workers/attacker'
 import defender from './workers/defender'
+import builder from './workers/builder'
 
 enum RoomState {
   Passive = 'Passive',
   Attacking = 'Attacking',
   Defending = 'Defending',
+  Building = 'Building',
 }
 
 const roomStates: { [k: string]: RoomState } = {}
@@ -16,6 +18,7 @@ const workerMap = {
   upgrader,
   attacker,
   defender,
+  builder,
 }
 
 function getRoomState(room: Room) {
@@ -27,6 +30,8 @@ function getRoomState(room: Room) {
     state = RoomState.Defending
   } else if (!isControlled) {
     state = RoomState.Attacking
+  } else if (Object.keys(Game.constructionSites).length > 1) {
+    state = RoomState.Building
   }
   roomStates[room.name] = state
   return state
@@ -46,6 +51,7 @@ export function loop() {
 
   const harvesters = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'harvester')
   const upgraders = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'upgrader')
+  const builders = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'builder')
   const fighters = Object.values(Game.creeps).filter(
     (creep) => creep.memory.activeRole == 'attacker' || creep.memory.activeRole == 'defender'
   )
@@ -60,7 +66,12 @@ export function loop() {
     )
   }
 
-  if (harvesters.length < 2 && calculateCreepCost(harvester.parts)) {
+  if (builders.length < 1 && Object.keys(Game.constructionSites).length > 1 && calculateCreepCost(builder.parts)) {
+    const newName = 'Builder' + Game.time
+    Game.spawns['Spawn1'].spawnCreep(builder.parts, newName, {
+      memory: { role: 'builder', activeRole: 'builder', building: false },
+    })
+  } else if (harvesters.length < 2 && calculateCreepCost(harvester.parts)) {
     const newName = 'Harvester' + Game.time
     Game.spawns['Spawn1'].spawnCreep(harvester.parts, newName, {
       memory: { role: 'harvester', activeRole: 'harvester' },
@@ -79,6 +90,26 @@ export function loop() {
 
   for (const name in Game.creeps) {
     const creep = Game.creeps[name]
+
+    if (
+      creep.room.controller?.my &&
+      creep.room.controller?.level > 2 &&
+      Object.keys(Game.constructionSites).length < 1
+    ) {
+      const mySpawn = creep.room.find(FIND_MY_SPAWNS)[0]
+      const extensionSpawns = creep.room.lookForAtArea(
+        LOOK_TERRAIN,
+        mySpawn.pos.x - 2,
+        mySpawn.pos.y - 2,
+        mySpawn.pos.x + 2,
+        mySpawn.pos.y + 2,
+        true
+      )[0]
+      if (extensionSpawns) {
+        creep.room.createConstructionSite(extensionSpawns.x, extensionSpawns.y, STRUCTURE_EXTENSION)
+      }
+    }
+
     const canAttack = creep.getActiveBodyparts(ATTACK)
     const roomState = getRoomState(creep.room)
     if (roomState === RoomState.Defending && canAttack) {

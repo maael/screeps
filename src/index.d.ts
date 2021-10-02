@@ -6,6 +6,7 @@ interface BaseCreepMemory {
 interface BuilderCreepMemory extends BaseCreepMemory {
   role: 'builder'
   activeRole: 'builder'
+  building: boolean
 }
 
 interface HarvesterCreepMemory extends BaseCreepMemory {
