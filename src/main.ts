@@ -69,7 +69,7 @@ export function loop() {
     )
   }
 
-  if (builders.length < 1 && Object.keys(Game.constructionSites).length > 1 && calculateCreepCost(builder.parts)) {
+  if (builders.length < 1 && Object.keys(Game.constructionSites).length > 0 && calculateCreepCost(builder.parts)) {
     const newName = 'Builder' + Game.time
     Game.spawns['Spawn1'].spawnCreep(builder.parts, newName, {
       memory: { role: 'builder', activeRole: 'builder', building: false },
