@@ -79,7 +79,7 @@ export function loop() {
     Game.spawns['Spawn1'].spawnCreep(harvester.parts, newName, {
       memory: { role: 'harvester', activeRole: 'harvester' },
     })
-  } else if (upgraders.length < 1 && calculateCreepCost(upgrader.parts)) {
+  } else if (upgraders.length < 2 && calculateCreepCost(upgrader.parts)) {
     const newName = 'Upgrader' + Game.time
     Game.spawns['Spawn1'].spawnCreep(upgrader.parts, newName, {
       memory: { role: 'upgrader', activeRole: 'upgrader', upgrading: false },
