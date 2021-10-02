@@ -26,12 +26,12 @@ function getRoomState(room: Room) {
   const isControlled = room.controller && room.controller.my
   const hasHostileCreeps = room.find(FIND_HOSTILE_CREEPS).length
   let state = RoomState.Passive
-  if (isControlled && hasHostileCreeps) {
+  if (Object.keys(Game.constructionSites).length > 0) {
+    state = RoomState.Building
+  } else if (isControlled && hasHostileCreeps) {
     state = RoomState.Defending
   } else if (!isControlled) {
     state = RoomState.Attacking
-  } else if (Object.keys(Game.constructionSites).length > 1) {
-    state = RoomState.Building
   }
   roomStates[room.name] = state
   return state
@@ -110,6 +110,7 @@ export function loop() {
     const canAttack = creep.getActiveBodyparts(RANGED_ATTACK)
     const canWork = creep.getActiveBodyparts(WORK)
     const roomState = getRoomState(creep.room)
+    console.log('Room state:', roomState)
     if (roomState === RoomState.Defending && canAttack) {
       creep.memory.activeRole = 'defender'
     } else if (roomState === RoomState.Attacking && canAttack) {
