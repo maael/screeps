@@ -1,6 +1,6 @@
 export default {
   run: function (creep: Creep) {
-    if (creep.memory.role !== 'upgrader') return
+    if (creep.memory.activeRole !== 'upgrader') return
     if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
       creep.memory.upgrading = false
       creep.say('🔄 harvest')
@@ -21,4 +21,5 @@ export default {
       }
     }
   },
+  parts: [WORK, CARRY, MOVE],
 }

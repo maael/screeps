@@ -1,6 +1,6 @@
 export default {
   run: function (creep: Creep) {
-    if (creep.memory.role !== 'harvester') return
+    if (creep.memory.activeRole !== 'harvester') return
     if (creep.store.getFreeCapacity() > 0) {
       const sources = creep.room.find(FIND_SOURCES)
       if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
@@ -22,4 +22,5 @@ export default {
       }
     }
   },
+  parts: [WORK, CARRY, MOVE],
 }
