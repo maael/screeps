@@ -51,7 +51,6 @@ export function loop() {
 
   const harvesters = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'harvester')
   const upgraders = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'upgrader')
-  const builders = Object.values(Game.creeps).filter((creep) => creep.memory.role == 'builder')
   const fighters = Object.values(Game.creeps).filter(
     (creep) =>
       creep.memory.activeRole == 'attacker' ||
@@ -69,12 +68,7 @@ export function loop() {
     )
   }
 
-  if (builders.length < 1 && Object.keys(Game.constructionSites).length > 0 && calculateCreepCost(builder.parts)) {
-    const newName = 'Builder' + Game.time
-    Game.spawns['Spawn1'].spawnCreep(builder.parts, newName, {
-      memory: { role: 'builder', activeRole: 'builder', building: false },
-    })
-  } else if (harvesters.length < 2 && calculateCreepCost(harvester.parts)) {
+  if (harvesters.length < 3 && calculateCreepCost(harvester.parts)) {
     const newName = 'Harvester' + Game.time
     Game.spawns['Spawn1'].spawnCreep(harvester.parts, newName, {
       memory: { role: 'harvester', activeRole: 'harvester' },
@@ -114,11 +108,14 @@ export function loop() {
     }
 
     const canAttack = creep.getActiveBodyparts(RANGED_ATTACK)
+    const canWork = creep.getActiveBodyparts(WORK)
     const roomState = getRoomState(creep.room)
     if (roomState === RoomState.Defending && canAttack) {
       creep.memory.activeRole = 'defender'
     } else if (roomState === RoomState.Attacking && canAttack) {
       creep.memory.activeRole = 'attacker'
+    } else if (roomState === RoomState.Building && canWork && harvesters.length > 1) {
+      creep.memory.activeRole = 'builder'
     } else {
       creep.memory.activeRole = creep.memory.role
     }
